@@ -2,6 +2,7 @@ from dvd import Dvd
 import pygame
 import config
 import random
+import math
 
 
 def main():
@@ -12,12 +13,8 @@ def main():
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 36)
     corners_hit = 0
-    text = font.render(f"Corners bounced off: {corners_hit}", True, (255, 255, 255))
-    text_rect = text.get_rect()
-    text_rect.topleft = (10, 10)
-    config.screen.fill((0, 0, 0))
-    config.screen.blit(text, text_rect)
-    pygame.display.flip()
+    error_radius = 50
+
     while running:
         clock.tick(60)
         for event in pygame.event.get():
@@ -28,7 +25,11 @@ def main():
                 if event.button == 1:
                     can_place = True
                     for dvd in DVDS:
-                        if dvd.rect.collidepoint(event.pos):
+                        distance = math.sqrt(
+                            (event.pos[0] - dvd.rect.centerx) ** 2
+                            + (event.pos[1] - dvd.rect.centery) ** 2
+                        )
+                        if distance < error_radius:
                             can_place = False
                             break
                     if can_place:
